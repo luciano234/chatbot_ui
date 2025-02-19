@@ -3,10 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatbot</title>
+    <title>ChatGPT Chatbot</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        #chatbox { width: 100%; max-width: 400px; margin: auto; border: 1px solid #ddd; padding: 10px; height: 400px; overflow-y: scroll; }
+        .message { padding: 5px; margin: 5px 0; border-radius: 5px; }
+        .user { background: #007bff; color: white; text-align: right; }
+        .bot { background: #ddd; text-align: left; }
+        input, button { margin-top: 10px; padding: 10px; width: 90%; max-width: 400px; }
+    </style>
 </head>
 <body>
-    <h1>Welcome to My Chatbot</h1>
-    <p>Coming soon...</p>
+    <h1>ChatGPT Chatbot</h1>
+    <div id="chatbox"></div>
+    <input type="text" id="userInput" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        const webhookURL = "https://hook.us1.make.com/zvjwiitd93do3bd5c4cnthmjbvcywvtr";  // Replace with your Make.com webhook URL
+
+        function sendMessage() {
+            let userInput = document.getElementById("userInput").value;
+            if (!userInput.trim()) return;
+
+            let chatbox = document.getElementById("chatbox");
+
+            // Show user message
+            let userMessage = document.createElement("div");
+            userMessage.className = "message user";
+            userMessage.textContent = userInput;
+            chatbox.appendChild(userMessage);
+            chatbox.scrollTop = chatbox.scrollHeight;
+
+            // Send user message to Make.com webhook
+            fetch(webhookURL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text: userInput })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Show bot response
+                let botMessage = document.createElement("div");
+                botMessage.className = "message bot";
+                botMessage.textContent = data.response;
+                chatbox.appendChild(botMessage);
+                chatbox.scrollTop = chatbox.scrollHeight;
+            })
+            .catch(error => console.error("Error:", error));
+
+            // Clear input field
+            document.getElementById("userInput").value = "";
+        }
+    </script>
 </body>
 </html>
