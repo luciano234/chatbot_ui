@@ -41,7 +41,7 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ text: userInput })
             })
-            .then(response => response.json())
+            .then(response => response.text())
             .then(data => {
                 // Show bot response
                 let botMessage = document.createElement("div");
