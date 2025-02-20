@@ -20,7 +20,7 @@
     <button onclick="sendMessage()">Send</button>
 
     <script>
-        const webhookURL = "https://hook.us1.make.com/zvjwiitd93do3bd5c4cnthmjbvcywvtr";  // Replace with your Make.com webhook URL
+        const webhookURL = "https://hook.us1.make.com/zvjwiitd93do3bd5c4cnthmjbvcywvtr";  // Replace with your actual Make.com Webhook URL
 
         function sendMessage() {
             let userInput = document.getElementById("userInput").value;
@@ -41,16 +41,28 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ text: userInput })
             })
-            .then(response => response.text())
-            .then(data => {
-                // Show bot response
-                let botMessage = document.createElement("div");
-                botMessage.className = "message bot";
-                botMessage.textContent = data.response;
-                chatbox.appendChild(botMessage);
-                chatbox.scrollTop = chatbox.scrollHeight;
+            .then(response => response.text())  // First, read the response as text
+            .then(text => {
+                console.log("Raw response from Make.com:", text);  // Debug output
+
+                try {
+                    let data = JSON.parse(text);  // Try parsing as JSON
+                    console.log("Parsed JSON:", data);
+
+                    if (data.response) {
+                        let botMessage = document.createElement("div");
+                        botMessage.className = "message bot";
+                        botMessage.textContent = data.response;
+                        chatbox.appendChild(botMessage);
+                        chatbox.scrollTop = chatbox.scrollHeight;
+                    } else {
+                        console.error("No 'response' key found in JSON:", data);
+                    }
+                } catch (error) {
+                    console.error("Invalid JSON response:", text);
+                }
             })
-            .catch(error => console.error("Error:", error));
+            .catch(error => console.error("Fetch error:", error));
 
             // Clear input field
             document.getElementById("userInput").value = "";
